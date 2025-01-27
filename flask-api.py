@@ -66,8 +66,8 @@ def download_models():
         'sgd_classifier.joblib': '1HlgGEJh80NHqtAmyoPckt7nIFQ33KaCd',
         'logistic_regression.joblib': '1Iur28SO0TLU-QNH7ZhIuNjwgwPinPQsT',
         'ensemble_weights.npy': '192h_9rCYtPEiFGTR1-8IQuJg2epN-tSB',
-        'tokenizer.joblib': '192h_9rCYtPEiFGTR1-8IQuJg2epN-tSB',
-        'label_encoder.joblib': '192h_9rCYtPEiFGTR1-8IQuJg2epN-tSB'
+        'tokenizer.joblib': '1mPDn_4eSuCQJ6n26HtDzKE3Dt4gqP5P-',
+        'label_encoder.joblib': '1m6FO98N_aBRX9mW6kK2Bx6RH0LTLANvZ'
     }
     
     # Models klasörünü oluştur
