@@ -95,17 +95,21 @@ try:
     sgd_classifier = joblib.load('models/sgd_classifier.joblib')
     lr_classifier = joblib.load('models/logistic_regression.joblib')
     
-    # Derin öğrenme modellerini custom_objects ile yükle
+    # Derin öğrenme modellerini yükle
     custom_objects = {}
     deep_model = tf.keras.models.load_model('models/best_deep_model.keras', 
                                           custom_objects=custom_objects,
                                           compile=False)
+    deep_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    
     ensemble_weights = np.load('models/ensemble_weights.npy')
 
     # Sınıflandırma Modeli
     classifier_model = tf.keras.models.load_model('models/arabic_classifier.keras',
                                                custom_objects=custom_objects,
                                                compile=False)
+    classifier_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    
     tokenizer = joblib.load('models/tokenizer.joblib')
     label_encoder = joblib.load('models/label_encoder.joblib')
 
