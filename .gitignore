@@ -26,6 +26,8 @@ env/
 # Large files
 *.h5
 cc.ar.300.vec
+models/best_deep_model.keras
+models/sentiment_analysis_model_optimized.h5
 
 # Misc
 *.log
