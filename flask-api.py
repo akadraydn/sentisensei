@@ -73,21 +73,35 @@ def download_models():
     # Models klasörünü oluştur
     if not os.path.exists('models'):
         os.makedirs('models')
+        app.logger.info("Models klasörü oluşturuldu")
     
     # Modelleri indir
     for model_name, file_id in model_urls.items():
         model_path = f'models/{model_name}'
         if not os.path.exists(model_path):
-            app.logger.info(f"{model_name} indiriliyor...")
+            app.logger.info(f"{model_name} indiriliyor... (ID: {file_id})")
             try:
                 url = f'https://drive.google.com/uc?id={file_id}'
-                gdown.download(url, model_path, quiet=False)
-                app.logger.info(f"{model_name} indirildi.")
+                app.logger.debug(f"İndirme URL'i: {url}")
+                
+                success = gdown.download(url, model_path, quiet=False, fuzzy=True)
+                
+                if success:
+                    app.logger.info(f"{model_name} başarıyla indirildi")
+                    if os.path.exists(model_path):
+                        file_size = os.path.getsize(model_path)
+                        app.logger.info(f"{model_name} dosya boyutu: {file_size} bytes")
+                    else:
+                        app.logger.error(f"{model_name} indirildi ama dosya bulunamıyor!")
+                else:
+                    raise Exception("gdown indirme başarısız oldu")
+                    
             except Exception as e:
                 app.logger.error(f"{model_name} indirilirken hata oluştu: {str(e)}")
-                raise Exception(f"Model dosyası indirilemedi: {model_name}")
+                app.logger.error(f"Hata detayları: {type(e).__name__}")
+                raise Exception(f"Model dosyası indirilemedi: {model_name}, Hata: {str(e)}")
         else:
-            app.logger.info(f"{model_name} zaten mevcut.")
+            app.logger.info(f"{model_name} zaten mevcut. Boyut: {os.path.getsize(model_path)} bytes")
 
 # Modelleri indir
 download_models()
