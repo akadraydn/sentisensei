@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
-import ssl
 import logging
 import tensorflow as tf
 import numpy as np
@@ -14,16 +13,36 @@ from nltk.corpus import stopwords
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
-# CORS ayarlarını güncelliyoruz
+# CORS ayarları
 CORS(app, resources={r"/*": {"origins": "*", "methods": ["POST"], "allow_headers": ["Content-Type"]}})
 
 # NLTK verilerini indir
 nltk.download('stopwords')
 nltk.download('punkt')
 
+def is_arabic_text(text):
+    """Arapça metin kontrolü fonksiyonu"""
+    if not text or not text.strip():
+        return False
+        
+    # Arapça karakter pattern'i
+    arabic_pattern = re.compile(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFE70-\uFEFF\u0660-\u0669]+')
+    arabic_chars = len(re.findall(arabic_pattern, text))
+    total_chars = len(text.strip())
+    
+    # Debug için log
+    app.logger.debug(f"Metin: {text}")
+    app.logger.debug(f"Toplam karakter: {total_chars}")
+    app.logger.debug(f"Arapça karakter: {arabic_chars}")
+    
+    # Arapça karakter oranı %5'den az ise Arapça değil
+    arabic_ratio = arabic_chars / total_chars if total_chars > 0 else 0
+    app.logger.debug(f"Arapça oran: {arabic_ratio}")
+    
+    return arabic_ratio >= 0.05
+
 def preprocess_arabic_text(text):
     """Arapça metin ön işleme fonksiyonu"""
-    # Metni küçük harfe çevir
     text = str(text).lower()
     
     # Emojileri kaldır
@@ -82,6 +101,20 @@ def predict():
         app.logger.debug("Tahmin isteği alındı")
         data = request.get_json()
         text = data.get('text', '')
+        
+        # Boş metin kontrolü
+        if not text or not text.strip():
+            return jsonify({
+                'error': 'Metin boş olamaz.',
+                'status': 'error'
+            }), 400
+        
+        # Arapça metin kontrolü
+        if not is_arabic_text(text):
+            return jsonify({
+                'error': 'Lütfen Arapça bir metin girin. Bu metin Arapça değil.',
+                'status': 'error'
+            }), 400
         
         # Metin ön işleme
         processed_text = preprocess_arabic_text(text)
@@ -142,6 +175,20 @@ def predict():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    context.load_cert_chain('certificate.pem', 'private-key.pem')
-    app.run(host='0.0.0.0', port=5002, ssl_context=context, debug=True)
+    # Portu sabit 5002'ye ayarla
+    port = 5002
+    
+    # Port kullanımda mı kontrol et
+    import socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = sock.connect_ex(('127.0.0.1', port))
+    
+    if result == 0:
+        print(f"HATA: {port} portu başka bir uygulama tarafından kullanılıyor!")
+        print("Lütfen bu portu kullanan diğer uygulamaları kapatın ve tekrar deneyin.")
+        print("Diğer Flask uygulamalarını veya servisleri kontrol edin.")
+        exit(1)
+    sock.close()
+    
+    # API'yi başlat
+    app.run(host='0.0.0.0', port=port)
