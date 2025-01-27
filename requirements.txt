@@ -8,3 +8,4 @@ flask==3.0.2
 flask-cors==5.0.0
 joblib==1.4.2
 gunicorn==21.2.0
+gdown==5.1.0

@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 import joblib
 import logging
-import tensorflow as tf
+import tensorflow.keras as keras
 import numpy as np
 from nltk.stem.isri import ISRIStemmer
 import re
@@ -10,6 +10,7 @@ import string
 import nltk
 from nltk.corpus import stopwords
 import os
+import gdown
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -51,6 +52,50 @@ def handle_options():
 # NLTK verilerini indir
 nltk.download('stopwords')
 nltk.download('punkt')
+
+# Model dosyalarını Google Drive'dan indir
+def download_models():
+    app.logger.info("Model dosyaları indiriliyor...")
+    
+    # Model dosyalarının Drive linkleri
+    model_urls = {
+        'best_deep_model.keras': 'https://drive.google.com/file/d/1v9I4cuD-ZGmNg3GDH_6HcanljmlKlLol/view?usp=sharing',
+        'arabic_classifier.keras': 'https://drive.google.com/file/d/1dyyFnkONVUjnVlsb51gurjClylvX5HBg/view?usp=sharing'  
+    }
+    
+    # Models klasörünü oluştur
+    if not os.path.exists('models'):
+        os.makedirs('models')
+    
+    # Modelleri indir
+    for model_name, url in model_urls.items():
+        model_path = f'models/{model_name}'
+        if not os.path.exists(model_path):
+            app.logger.info(f"{model_name} indiriliyor...")
+            gdown.download(url, model_path, quiet=False)
+            app.logger.info(f"{model_name} indirildi.")
+        else:
+            app.logger.info(f"{model_name} zaten mevcut.")
+
+# Modelleri indir
+download_models()
+
+# Model yükleme
+app.logger.info("Modeller yükleniyor...")
+
+# Duygu Analizi Modelleri
+tfidf_vectorizer = joblib.load('models/tfidf_vectorizer.joblib')
+sgd_classifier = joblib.load('models/sgd_classifier.joblib')
+lr_classifier = joblib.load('models/logistic_regression.joblib')
+deep_model = keras.models.load_model('models/best_deep_model.keras')
+ensemble_weights = np.load('models/ensemble_weights.npy')
+
+# Sınıflandırma Modeli
+classifier_model = keras.models.load_model('models/arabic_classifier.keras')
+tokenizer = joblib.load('models/tokenizer.joblib')
+label_encoder = joblib.load('models/label_encoder.joblib')
+
+app.logger.info("Modeller başarıyla yüklendi")
 
 def is_arabic_text(text):
     """Arapça metin kontrolü fonksiyonu"""
@@ -109,23 +154,6 @@ def preprocess_arabic_text(text):
     text = re.sub(r'(\b\w+\b)(\s+\1\b)+', r'\1', text)
     
     return text
-
-# Model yükleme
-app.logger.info("Modeller yükleniyor...")
-
-# Duygu Analizi Modelleri
-tfidf_vectorizer = joblib.load('models/tfidf_vectorizer.joblib')
-sgd_classifier = joblib.load('models/sgd_classifier.joblib')
-lr_classifier = joblib.load('models/logistic_regression.joblib')
-deep_model = tf.keras.models.load_model('models/best_deep_model.keras')
-ensemble_weights = np.load('models/ensemble_weights.npy')
-
-# Sınıflandırma Modeli
-classifier_model = tf.keras.models.load_model('models/arabic_classifier.keras')
-tokenizer = joblib.load('models/tokenizer.joblib')
-label_encoder = joblib.load('models/label_encoder.joblib')
-
-app.logger.info("Modeller başarıyla yüklendi")
 
 @app.route('/predict', methods=['POST'])
 def predict():
