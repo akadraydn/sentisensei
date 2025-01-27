@@ -1,0 +1,147 @@
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import joblib
+import ssl
+import logging
+import tensorflow as tf
+import numpy as np
+from nltk.stem.isri import ISRIStemmer
+import re
+import string
+import nltk
+from nltk.corpus import stopwords
+
+app = Flask(__name__)
+logging.basicConfig(level=logging.DEBUG)
+
+# CORS ayarlarını güncelliyoruz
+CORS(app, resources={r"/*": {"origins": "*", "methods": ["POST"], "allow_headers": ["Content-Type"]}})
+
+# NLTK verilerini indir
+nltk.download('stopwords')
+nltk.download('punkt')
+
+def preprocess_arabic_text(text):
+    """Arapça metin ön işleme fonksiyonu"""
+    # Metni küçük harfe çevir
+    text = str(text).lower()
+    
+    # Emojileri kaldır
+    emoji_pattern = re.compile("["
+        u"\U0001F600-\U0001F64F"
+        u"\U0001F300-\U0001F5FF"
+        u"\U0001F680-\U0001F6FF"
+        u"\U0001F1E0-\U0001F1FF"
+        "]+", flags=re.UNICODE)
+    text = emoji_pattern.sub(r'', text)
+    
+    # Noktalama işaretlerini kaldır
+    text = text.translate(str.maketrans('', '', string.punctuation))
+    
+    # Stop words'leri kaldır
+    stop_words = set(stopwords.words('arabic'))
+    words = text.split()
+    text = ' '.join([word for word in words if word not in stop_words])
+    
+    # Stemming uygula
+    stemmer = ISRIStemmer()
+    words = text.split()
+    text = ' '.join([stemmer.stem(word) for word in words])
+    
+    # URL'leri kaldır
+    text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
+    
+    # Sayıları kaldır
+    text = re.sub(r'\d+', '', text)
+    
+    # Tekrarlanan kelimeleri azalt
+    text = re.sub(r'(\b\w+\b)(\s+\1\b)+', r'\1', text)
+    
+    return text
+
+# Model yükleme
+app.logger.info("Modeller yükleniyor...")
+
+# Duygu Analizi Modelleri
+tfidf_vectorizer = joblib.load('models/tfidf_vectorizer.joblib')
+sgd_classifier = joblib.load('models/sgd_classifier.joblib')
+lr_classifier = joblib.load('models/logistic_regression.joblib')
+deep_model = tf.keras.models.load_model('models/best_deep_model.keras')
+ensemble_weights = np.load('models/ensemble_weights.npy')
+
+# Sınıflandırma Modeli
+classifier_model = tf.keras.models.load_model('models/arabic_classifier.keras')
+tokenizer = joblib.load('models/tokenizer.joblib')
+label_encoder = joblib.load('models/label_encoder.joblib')
+
+app.logger.info("Modeller başarıyla yüklendi")
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    try:
+        app.logger.debug("Tahmin isteği alındı")
+        data = request.get_json()
+        text = data.get('text', '')
+        
+        # Metin ön işleme
+        processed_text = preprocess_arabic_text(text)
+        
+        # Duygu Analizi
+        text_vector = tfidf_vectorizer.transform([processed_text])
+        
+        # Her modelden tahmin al
+        sgd_pred = sgd_classifier.predict_proba(text_vector)[0, 1]
+        lr_pred = lr_classifier.predict_proba(text_vector)[0, 1]
+        deep_pred = deep_model.predict(text_vector.toarray())[0, 0]
+        
+        # Ensemble tahmin
+        ensemble_pred = (
+            ensemble_weights[0] * sgd_pred +
+            ensemble_weights[1] * lr_pred +
+            ensemble_weights[2] * deep_pred
+        )
+        
+        sentiment = 'positive' if ensemble_pred > 0.5 else 'negative'
+        sentiment_confidence = ensemble_pred if ensemble_pred > 0.5 else 1 - ensemble_pred
+        
+        # Kategori Sınıflandırma
+        sequence = tokenizer.texts_to_sequences([processed_text])
+        padded = tf.keras.preprocessing.sequence.pad_sequences(sequence, maxlen=200, padding='post')
+        category_pred = classifier_model.predict(padded)
+        
+        # En yüksek olasılıklı 3 kategoriyi al
+        top_3_indices = category_pred[0].argsort()[-3:][::-1]
+        top_3_categories = label_encoder.inverse_transform(top_3_indices)
+        top_3_probabilities = category_pred[0][top_3_indices]
+        
+        response = {
+            'sentiment': {
+                'label': sentiment,
+                'confidence': float(sentiment_confidence),
+                'model_predictions': {
+                    'sgd': float(sgd_pred),
+                    'logistic_regression': float(lr_pred),
+                    'deep_learning': float(deep_pred),
+                    'ensemble': float(ensemble_pred)
+                }
+            },
+            'category': {
+                'top_category': str(top_3_categories[0]),
+                'confidence': float(top_3_probabilities[0]),
+                'top_3_predictions': [
+                    {'category': str(cat), 'probability': float(prob)}
+                    for cat, prob in zip(top_3_categories, top_3_probabilities)
+                ]
+            }
+        }
+        
+        return jsonify(response)
+            
+    except Exception as e:
+        app.logger.error(f"Hata: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == '__main__':
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    context.load_cert_chain('certificate.pem', 'private-key.pem')
+    app.run(host='0.0.0.0', port=5002, ssl_context=context, debug=True)

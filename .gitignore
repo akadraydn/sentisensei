@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Security
+*.pem
+*.key
+*.crt
+
+# Large files
+*.h5
+cc.ar.300.vec
+
+# Misc
+*.log
+Adsız.rtf 
