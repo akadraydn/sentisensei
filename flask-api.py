@@ -94,11 +94,18 @@ try:
     tfidf_vectorizer = joblib.load('models/tfidf_vectorizer.joblib')
     sgd_classifier = joblib.load('models/sgd_classifier.joblib')
     lr_classifier = joblib.load('models/logistic_regression.joblib')
-    deep_model = keras.models.load_model('models/best_deep_model.keras', compile=False)
+    
+    # Derin öğrenme modellerini custom_objects ile yükle
+    custom_objects = {}
+    deep_model = tf.keras.models.load_model('models/best_deep_model.keras', 
+                                          custom_objects=custom_objects,
+                                          compile=False)
     ensemble_weights = np.load('models/ensemble_weights.npy')
 
     # Sınıflandırma Modeli
-    classifier_model = keras.models.load_model('models/arabic_classifier.keras', compile=False)
+    classifier_model = tf.keras.models.load_model('models/arabic_classifier.keras',
+                                               custom_objects=custom_objects,
+                                               compile=False)
     tokenizer = joblib.load('models/tokenizer.joblib')
     label_encoder = joblib.load('models/label_encoder.joblib')
 
