@@ -11,7 +11,7 @@ import string
 import nltk
 from nltk.corpus import stopwords
 import os
-import gdown
+import requests
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -60,14 +60,14 @@ def download_models():
     
     # Model dosyalarının Drive linkleri - ID'leri kullanarak
     model_urls = {
-        'best_deep_model.keras': '1v9I4cuD-ZGmNg3GDH_6HcanljmlKlLol',
-        'arabic_classifier.keras': '1dyyFnkONVUjnVlsb51gurjClylvX5HBg',
-        'tfidf_vectorizer.joblib': '1YRAfHNFTS8v6eFGgx_q1C62HKqX0lYJa',
-        'sgd_classifier.joblib': '1HlgGEJh80NHqtAmyoPckt7nIFQ33KaCd',
-        'logistic_regression.joblib': '1Iur28SO0TLU-QNH7ZhIuNjwgwPinPQsT',
-        'ensemble_weights.npy': '192h_9rCYtPEiFGTR1-8IQuJg2epN-tSB',
-        'tokenizer.joblib': '1mPDn_4eSuCQJ6n26HtDzKE3Dt4gqP5P-',
-        'label_encoder.joblib': '1m6FO98N_aBRX9mW6kK2Bx6RH0LTLANvZ'
+        'best_deep_model.keras': 'https://drive.google.com/uc?export=download&id=1v9I4cuD-ZGmNg3GDH_6HcanljmlKlLol',
+        'arabic_classifier.keras': 'https://drive.google.com/uc?export=download&id=1dyyFnkONVUjnVlsb51gurjClylvX5HBg',
+        'tfidf_vectorizer.joblib': 'https://drive.google.com/uc?export=download&id=1YRAfHNFTS8v6eFGgx_q1C62HKqX0lYJa',
+        'sgd_classifier.joblib': 'https://drive.google.com/uc?export=download&id=1HlgGEJh80NHqtAmyoPckt7nIFQ33KaCd',
+        'logistic_regression.joblib': 'https://drive.google.com/uc?export=download&id=1Iur28SO0TLU-QNH7ZhIuNjwgwPinPQsT',
+        'ensemble_weights.npy': 'https://drive.google.com/uc?export=download&id=192h_9rCYtPEiFGTR1-8IQuJg2epN-tSB',
+        'tokenizer.joblib': 'https://drive.google.com/uc?export=download&id=1mPDn_4eSuCQJ6n26HtDzKE3Dt4gqP5P-',
+        'label_encoder.joblib': 'https://drive.google.com/uc?export=download&id=1m6FO98N_aBRX9mW6kK2Bx6RH0LTLANvZ'
     }
     
     # Models klasörünü oluştur
@@ -76,25 +76,43 @@ def download_models():
         app.logger.info("Models klasörü oluşturuldu")
     
     # Modelleri indir
-    for model_name, file_id in model_urls.items():
+    for model_name, url in model_urls.items():
         model_path = f'models/{model_name}'
         if not os.path.exists(model_path):
-            app.logger.info(f"{model_name} indiriliyor... (ID: {file_id})")
+            app.logger.info(f"{model_name} indiriliyor...")
             try:
-                url = f'https://drive.google.com/uc?id={file_id}&confirm=t'
                 app.logger.debug(f"İndirme URL'i: {url}")
                 
-                success = gdown.download(url, model_path, quiet=False, use_cookies=False, verify=False)
+                # İlk istek - indirme URL'ini al
+                session = requests.Session()
+                response = session.get(url, stream=True, verify=False)
                 
-                if success:
-                    app.logger.info(f"{model_name} başarıyla indirildi")
+                if 'confirm=' not in response.url:
+                    # Onay sayfasından token al
+                    token = None
+                    for line in response.iter_lines():
+                        if b'confirm=' in line:
+                            token = line.decode().split('confirm=')[1].split('"')[0]
+                            break
+                    
+                    if token:
+                        url = f"{url}&confirm={token}"
+                        response = session.get(url, stream=True, verify=False)
+                
+                # Dosyayı kaydet
+                if response.status_code == 200:
+                    with open(model_path, 'wb') as f:
+                        for chunk in response.iter_content(chunk_size=8192):
+                            if chunk:
+                                f.write(chunk)
+                    
                     if os.path.exists(model_path):
                         file_size = os.path.getsize(model_path)
-                        app.logger.info(f"{model_name} dosya boyutu: {file_size} bytes")
+                        app.logger.info(f"{model_name} başarıyla indirildi. Boyut: {file_size} bytes")
                     else:
-                        app.logger.error(f"{model_name} indirildi ama dosya bulunamıyor!")
+                        raise Exception(f"{model_name} indirilemedi: Dosya oluşturulamadı")
                 else:
-                    raise Exception("gdown indirme başarısız oldu")
+                    raise Exception(f"HTTP Hata Kodu: {response.status_code}")
                     
             except Exception as e:
                 app.logger.error(f"{model_name} indirilirken hata oluştu: {str(e)}")
