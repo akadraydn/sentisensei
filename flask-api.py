@@ -57,10 +57,10 @@ nltk.download('punkt')
 def download_models():
     app.logger.info("Model dosyaları indiriliyor...")
     
-    # Model dosyalarının Drive linkleri
+    # Model dosyalarının Drive linkleri - ID'leri kullanarak
     model_urls = {
-        'best_deep_model.keras': 'https://drive.google.com/file/d/1v9I4cuD-ZGmNg3GDH_6HcanljmlKlLol/view?usp=sharing',
-        'arabic_classifier.keras': 'https://drive.google.com/file/d/1dyyFnkONVUjnVlsb51gurjClylvX5HBg/view?usp=sharing'  
+        'best_deep_model.keras': '1v9I4cuD-ZGmNg3GDH_6HcanljmlKlLol',
+        'arabic_classifier.keras': '1dyyFnkONVUjnVlsb51gurjClylvX5HBg'  
     }
     
     # Models klasörünü oluştur
@@ -68,12 +68,17 @@ def download_models():
         os.makedirs('models')
     
     # Modelleri indir
-    for model_name, url in model_urls.items():
+    for model_name, file_id in model_urls.items():
         model_path = f'models/{model_name}'
         if not os.path.exists(model_path):
             app.logger.info(f"{model_name} indiriliyor...")
-            gdown.download(url, model_path, quiet=False)
-            app.logger.info(f"{model_name} indirildi.")
+            try:
+                url = f'https://drive.google.com/uc?id={file_id}'
+                gdown.download(url, model_path, quiet=False)
+                app.logger.info(f"{model_name} indirildi.")
+            except Exception as e:
+                app.logger.error(f"{model_name} indirilirken hata oluştu: {str(e)}")
+                raise Exception(f"Model dosyası indirilemedi: {model_name}")
         else:
             app.logger.info(f"{model_name} zaten mevcut.")
 
