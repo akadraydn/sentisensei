@@ -61,7 +61,13 @@ def download_models():
     # Model dosyalarının Drive linkleri - ID'leri kullanarak
     model_urls = {
         'best_deep_model.keras': '1v9I4cuD-ZGmNg3GDH_6HcanljmlKlLol',
-        'arabic_classifier.keras': '1dyyFnkONVUjnVlsb51gurjClylvX5HBg'  
+        'arabic_classifier.keras': '1dyyFnkONVUjnVlsb51gurjClylvX5HBg',
+        'tfidf_vectorizer.joblib': '1YRAfHNFTS8v6eFGgx_q1C62HKqX0lYJa',
+        'sgd_classifier.joblib': '1HlgGEJh80NHqtAmyoPckt7nIFQ33KaCd',
+        'logistic_regression.joblib': '1Iur28SO0TLU-QNH7ZhIuNjwgwPinPQsT',
+        'ensemble_weights.npy': '192h_9rCYtPEiFGTR1-8IQuJg2epN-tSB',
+        'tokenizer.joblib': '192h_9rCYtPEiFGTR1-8IQuJg2epN-tSB',
+        'label_encoder.joblib': '192h_9rCYtPEiFGTR1-8IQuJg2epN-tSB'
     }
     
     # Models klasörünü oluştur
