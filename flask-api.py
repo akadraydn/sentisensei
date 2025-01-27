@@ -88,19 +88,23 @@ download_models()
 # Model yükleme
 app.logger.info("Modeller yükleniyor...")
 
-# Duygu Analizi Modelleri
-tfidf_vectorizer = joblib.load('models/tfidf_vectorizer.joblib')
-sgd_classifier = joblib.load('models/sgd_classifier.joblib')
-lr_classifier = joblib.load('models/logistic_regression.joblib')
-deep_model = keras.models.load_model('models/best_deep_model.keras')
-ensemble_weights = np.load('models/ensemble_weights.npy')
+try:
+    # Duygu Analizi Modelleri
+    tfidf_vectorizer = joblib.load('models/tfidf_vectorizer.joblib')
+    sgd_classifier = joblib.load('models/sgd_classifier.joblib')
+    lr_classifier = joblib.load('models/logistic_regression.joblib')
+    deep_model = keras.models.load_model('models/best_deep_model.keras', compile=False)
+    ensemble_weights = np.load('models/ensemble_weights.npy')
 
-# Sınıflandırma Modeli
-classifier_model = keras.models.load_model('models/arabic_classifier.keras')
-tokenizer = joblib.load('models/tokenizer.joblib')
-label_encoder = joblib.load('models/label_encoder.joblib')
+    # Sınıflandırma Modeli
+    classifier_model = keras.models.load_model('models/arabic_classifier.keras', compile=False)
+    tokenizer = joblib.load('models/tokenizer.joblib')
+    label_encoder = joblib.load('models/label_encoder.joblib')
 
-app.logger.info("Modeller başarıyla yüklendi")
+    app.logger.info("Modeller başarıyla yüklendi")
+except Exception as e:
+    app.logger.error(f"Model yükleme hatası: {str(e)}")
+    raise
 
 def is_arabic_text(text):
     """Arapça metin kontrolü fonksiyonu"""

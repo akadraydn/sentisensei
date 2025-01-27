@@ -1,8 +1,8 @@
 numpy==1.26.4
 pandas==2.1.4
 scikit-learn==1.5.2
-tensorflow==2.15.0
-keras>=2.15.0,<2.16.0
+tensorflow==2.13.0
+keras==2.13.1
 nltk==3.8.1
 flask==3.0.2
 flask-cors==5.0.0
