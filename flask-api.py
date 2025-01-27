@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 import joblib
 import logging
@@ -9,12 +9,44 @@ import re
 import string
 import nltk
 from nltk.corpus import stopwords
+import os
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 # CORS ayarları
-CORS(app, resources={r"/*": {"origins": "*", "methods": ["POST"], "allow_headers": ["Content-Type"]}})
+CORS(app, resources={
+    r"/*": {
+        "origins": ["https://www.sentisensei.com", "http://www.sentisensei.com", "https://sentisensei.com", "http://sentisensei.com"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True,
+        "max_age": 3600
+    }
+})
+
+@app.after_request
+def add_cors_headers(response):
+    origin = request.headers.get('Origin')
+    if origin in ["https://www.sentisensei.com", "http://www.sentisensei.com", "https://sentisensei.com", "http://sentisensei.com"]:
+        response.headers['Access-Control-Allow-Origin'] = origin
+        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+        response.headers['Access-Control-Max-Age'] = '3600'
+    return response
+
+@app.route('/predict', methods=['OPTIONS'])
+def handle_options():
+    response = make_response()
+    origin = request.headers.get('Origin')
+    if origin in ["https://www.sentisensei.com", "http://www.sentisensei.com", "https://sentisensei.com", "http://sentisensei.com"]:
+        response.headers['Access-Control-Allow-Origin'] = origin
+        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+        response.headers['Access-Control-Max-Age'] = '3600'
+    return response
 
 # NLTK verilerini indir
 nltk.download('stopwords')
@@ -175,20 +207,6 @@ def predict():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    # Portu sabit 5002'ye ayarla
-    port = 5002
-    
-    # Port kullanımda mı kontrol et
-    import socket
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    result = sock.connect_ex(('127.0.0.1', port))
-    
-    if result == 0:
-        print(f"HATA: {port} portu başka bir uygulama tarafından kullanılıyor!")
-        print("Lütfen bu portu kullanan diğer uygulamaları kapatın ve tekrar deneyin.")
-        print("Diğer Flask uygulamalarını veya servisleri kontrol edin.")
-        exit(1)
-    sock.close()
-    
-    # API'yi başlat
+    # Production ortamında port ve host ayarları
+    port = int(os.environ.get('PORT', 5002))
     app.run(host='0.0.0.0', port=port)

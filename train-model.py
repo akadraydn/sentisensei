@@ -6,12 +6,12 @@ from nltk.tokenize import word_tokenize
 import re
 from sklearn.preprocessing import LabelEncoder
 import numpy as np
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.utils import to_categorical
+from keras.preprocessing.text import Tokenizer
+from keras.utils import pad_sequences
+from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Embedding, LSTM, Dense, Dropout, BatchNormalization
+from keras.models import Sequential
+from keras.layers import Embedding, LSTM, Dense, Dropout, BatchNormalization
 import matplotlib.pyplot as plt
 from sklearn.metrics import classification_report, confusion_matrix
 import seaborn as sns
