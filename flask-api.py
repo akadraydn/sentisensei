@@ -263,5 +263,6 @@ def predict():
 
 if __name__ == '__main__':
     # Production ortamında port ve host ayarları
-    port = int(os.environ.get('PORT', 5002))
-    app.run(host='0.0.0.0', port=port)
+    port = int(os.environ.get('PORT', 10000))  # Render için varsayılan port
+    app.logger.info(f"Uygulama {port} portunda başlatılıyor...")
+    app.run(host='0.0.0.0', port=port, debug=False)
