@@ -4,18 +4,27 @@ Bu proje, Arapça metinler üzerinde duygu analizi ve kategori sınıflandırmas
 
 ## Sistem Gereksinimleri
 
-- macOS işletim sistemi
+- macOS veya Windows işletim sistemi
 - Python 3.9
 - pip (Python paket yöneticisi)
 
 ## Kurulum Adımları
 
+### macOS için:
+
 1. **Python Kurulumu:**
    - Eğer bilgisayarınızda Python 3.9 kurulu değilse, [Python'un resmi sitesinden](https://www.python.org/downloads/) indirip kurabilirsiniz
+   - Kurulum sırasında "Add Python 3.9 to PATH" seçeneğini işaretlediğinizden emin olun
    - Kurulumdan sonra terminali açıp aşağıdaki komutu yazarak Python'un kurulu olduğunu doğrulayın:
    ```bash
    python3 --version
    ```
+   - Eğer komut çalışmazsa, Terminal'i kapatıp yeniden açın
+   - Hala çalışmıyorsa, Python'u PATH'e manuel olarak ekleyin:
+     ```bash
+     echo 'export PATH="/Library/Frameworks/Python.framework/Versions/3.9/bin:$PATH"' >> ~/.zshrc
+     source ~/.zshrc
+     ```
 
 2. **Proje Dosyalarını İndirin:**
    - [Bu linkten](https://github.com/akadraydn/SentiSensei) projeyi ZIP olarak indirin
@@ -31,6 +40,41 @@ Bu proje, Arapça metinler üzerinde duygu analizi ve kategori sınıflandırmas
    source venv/bin/activate
    ```
 
+### Windows için:
+
+1. **Python Kurulumu:**
+   - [Python'un resmi sitesinden](https://www.python.org/downloads/) Python 3.9'u indirin
+   - İndirilen kurulum dosyasını çalıştırın
+   - Kurulum sırasında "Add Python 3.9 to PATH" kutucuğunu mutlaka işaretleyin
+   - Kurulumdan sonra Komut İstemi'ni (cmd) açıp şu komutu yazarak Python'un kurulu olduğunu doğrulayın:
+   ```cmd
+   python --version
+   ```
+   - Eğer komut çalışmazsa, Komut İstemi'ni kapatıp yeniden açın
+   - Hala çalışmıyorsa, Sistem Ortam Değişkenleri'nden PATH'e Python'u ekleyin:
+     1. Windows + R tuşlarına basın
+     2. "sysdm.cpl" yazıp Enter'a basın
+     3. Gelişmiş sekmesine tıklayın
+     4. "Ortam Değişkenleri" butonuna tıklayın
+     5. PATH değişkenini seçip "Düzenle"ye tıklayın
+     6. "Yeni" butonuna tıklayıp Python kurulum dizinini ekleyin (genellikle C:\Users\KullanıcıAdı\AppData\Local\Programs\Python\Python39)
+
+2. **Proje Dosyalarını İndirin:**
+   - [Bu linkten](https://github.com/akadraydn/SentiSensei) projeyi ZIP olarak indirin
+   - İndirdiğiniz ZIP dosyasını çıkartın
+   - Komut İstemi'ni açın ve çıkarttığınız klasöre gidin:
+   ```cmd
+   cd İNDİRDİĞİNİZ_KLASÖRÜN_YOLU
+   ```
+
+3. **Sanal Ortam Oluşturun:**
+   ```cmd
+   python -m venv venv
+   venv\Scripts\activate
+   ```
+
+### Her İki İşletim Sistemi için Ortak Adımlar:
+
 4. **Gerekli Paketleri Yükleyin:**
    ```bash
    pip install -r requirements.txt
@@ -44,7 +88,7 @@ Bu proje, Arapça metinler üzerinde duygu analizi ve kategori sınıflandırmas
    ```bash
    python flask-api.py
    ```
-   Terminal'de "Running on http://127.0.0.1:5002" benzeri bir mesaj görmelisiniz.
+   Terminal'de veya Komut İstemi'nde "Running on http://127.0.0.1:5002" benzeri bir mesaj görmelisiniz.
 
 ## Kullanım
 
@@ -55,21 +99,28 @@ Bu proje, Arapça metinler üzerinde duygu analizi ve kategori sınıflandırmas
 
 ## Port Kullanımı
 
-API, 5002 portunda çalışacak şekilde ayarlanmıştır. Eğer bu port başka bir uygulama tarafından kullanılıyorsa, API başlatılamayacak ve bir hata mesajı göreceksiniz. Bu durumda:
+API, 5002 portunda çalışacak şekilde ayarlanmıştır. Eğer bu port başka bir uygulama tarafından kullanılıyorsa, API başlatılamayacak ve bir hata mesajı göreceksiniz.
 
+### macOS için:
 1. Tüm Terminal pencerelerini kapatın
 2. Bilgisayarınızı yeniden başlatın
 3. Sadece bu uygulamayı çalıştırın
 
-Alternatif olarak, macOS'ta şu komutla 5002 portunu kullanan uygulamayı bulup kapatabilirsiniz:
-
+Alternatif olarak, şu komutla 5002 portunu kullanan uygulamayı bulup kapatabilirsiniz:
 ```bash
 lsof -i :5002
+kill -9 PID_NUMARASI
 ```
 
-Bu çıktıda görünen PID numarasını kullanarak uygulamayı kapatın:
-```bash
-kill -9 PID_NUMARASI
+### Windows için:
+1. Tüm Komut İstemi pencerelerini kapatın
+2. Bilgisayarınızı yeniden başlatın
+3. Sadece bu uygulamayı çalıştırın
+
+Alternatif olarak, şu komutla 5002 portunu kullanan uygulamayı bulup kapatabilirsiniz:
+```cmd
+netstat -ano | findstr :5002
+taskkill /PID PID_NUMARASI /F
 ```
 
 ## Sorun Giderme
@@ -84,10 +135,12 @@ kill -9 PID_NUMARASI
 
 2. **"ModuleNotFoundError" Hatası:**
    - Sanal ortamın aktif olduğundan emin olun
+     - macOS: Terminal'de `source venv/bin/activate`
+     - Windows: Komut İstemi'nde `venv\Scripts\activate`
    - `requirements.txt` dosyasındaki tüm paketlerin yüklendiğini kontrol edin
 
 3. **Bağlantı Hatası:**
-   - Terminal'de API'nin çalışır durumda olduğunu kontrol edin
+   - Terminal'de veya Komut İstemi'nde API'nin çalışır durumda olduğunu kontrol edin
    - Bilgisayarınızın internet bağlantısını kontrol edin
 
 4. **Model Dosyası Hatası:**
@@ -103,13 +156,13 @@ kill -9 PID_NUMARASI
 
 5. **Port Kullanım Hatası:**
    - "Port 5002 is already in use" hatası alırsanız:
-     1. Tüm Terminal pencerelerini kapatın
+     1. Tüm Terminal/Komut İstemi pencerelerini kapatın
      2. Bilgisayarınızı yeniden başlatın
      3. Sadece bu uygulamayı çalıştırın
 
 ## Önemli Notlar
 
-- API çalışır durumdayken Terminal penceresini kapatmayın
+- API çalışır durumdayken Terminal/Komut İstemi penceresini kapatmayın
 - Bilgisayarınızı yeniden başlattığınızda API'yi tekrar başlatmanız gerekecektir
 - Sistem sadece Arapça metinler için çalışmaktadır
 - Web arayüzündeki "Dosya Yükle" özelliği şu anda aktif değildir, lütfen metin kutusunu kullanın
