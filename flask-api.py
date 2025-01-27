@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 import joblib
 import logging
+import tensorflow as tf
 import tensorflow.keras as keras
 import numpy as np
 from nltk.stem.isri import ISRIStemmer
