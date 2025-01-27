@@ -81,10 +81,10 @@ def download_models():
         if not os.path.exists(model_path):
             app.logger.info(f"{model_name} indiriliyor... (ID: {file_id})")
             try:
-                url = f'https://drive.google.com/uc?id={file_id}'
+                url = f'https://drive.google.com/file/d/{file_id}/view'
                 app.logger.debug(f"İndirme URL'i: {url}")
                 
-                success = gdown.download(url, model_path, quiet=False, fuzzy=True)
+                success = gdown.download(url, model_path, quiet=False, fuzzy=True, use_cookies=False)
                 
                 if success:
                     app.logger.info(f"{model_name} başarıyla indirildi")
