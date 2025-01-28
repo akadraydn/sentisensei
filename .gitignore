@@ -4,3 +4,4 @@ __pycache__/
 cc.ar.300.vec
 *.pem
 Adsız.rtf
+models/best_deep_model.keras
