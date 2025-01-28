@@ -27,16 +27,16 @@ nltk.download('punkt')
 def download_models():
     app.logger.info("Model dosyaları indiriliyor...")
     
-    # Model dosyalarının Drive linkleri - ID'leri kullanarak
+    # Model dosyalarının Drive linkleri
     model_urls = {
-        'best_deep_model.keras': 'https://drive.google.com/uc?export=download&id=1v9I4cuD-ZGmNg3GDH_6HcanljmlKlLol',
-        'arabic_classifier.keras': 'https://drive.google.com/uc?export=download&id=1dyyFnkONVUjnVlsb51gurjClylvX5HBg',
-        'tfidf_vectorizer.joblib': 'https://drive.google.com/uc?export=download&id=1YRAfHNFTS8v6eFGgx_q1C62HKqX0lYJa',
-        'sgd_classifier.joblib': 'https://drive.google.com/uc?export=download&id=1HlgGEJh80NHqtAmyoPckt7nIFQ33KaCd',
-        'logistic_regression.joblib': 'https://drive.google.com/uc?export=download&id=1Iur28SO0TLU-QNH7ZhIuNjwgwPinPQsT',
-        'ensemble_weights.npy': 'https://drive.google.com/uc?export=download&id=192h_9rCYtPEiFGTR1-8IQuJg2epN-tSB',
-        'tokenizer.joblib': 'https://drive.google.com/uc?export=download&id=1mPDn_4eSuCQJ6n26HtDzKE3Dt4gqP5P-',
-        'label_encoder.joblib': 'https://drive.google.com/uc?export=download&id=1m6FO98N_aBRX9mW6kK2Bx6RH0LTLANvZ'
+        'arabic_classifier.keras': 'https://drive.google.com/file/d/1p6HNek8N61STgwG6wQ1aSlITQRq9wLgd/view?usp=sharing',
+        'best_deep_model.keras': 'https://drive.google.com/file/d/1Q18NEeIzLq8zaiqJLPz-XYr8ICpdeqOX/view?usp=sharing',
+        'tfidf_vectorizer.joblib': 'https://drive.google.com/file/d/1LUintLQGEWq3pg67_8HC3mki1eyXOfi5/view?usp=sharing',
+        'tokenizer.joblib': 'https://drive.google.com/file/d/1gcEnb8kiaO6RsJ0X_q51qJh-xFmzaMOf/view?usp=sharing',
+        'label_encoder.joblib': 'https://drive.google.com/file/d/1DSfvEjsJBEary3kQ6CBUnJvs0ZQpHW6K/view?usp=sharing',
+        'sgd_classifier.joblib': 'https://drive.google.com/file/d/1JEEc9Z-_zPRAisvnx62KzJ5b1Mm1Hl19/view?usp=sharing',
+        'logistic_regression.joblib': 'https://drive.google.com/file/d/1YhQp9Kb2omyVMEcAuQjSQIgpNaz1vhzD/view?usp=sharing',
+        'ensemble_weights.npy': 'https://drive.google.com/file/d/1Uy7QjNnwaLRUrvvNLbhMWtuavcvACiYJ/view?usp=sharing'
     }
     
     # Models klasörünü oluştur
@@ -52,21 +52,12 @@ def download_models():
             try:
                 app.logger.debug(f"İndirme URL'i: {url}")
                 
-                # İlk istek - indirme URL'ini al
-                session = requests.Session()
-                response = session.get(url, stream=True, verify=False)
+                # URL'den dosya ID'sini çıkar
+                file_id = url.split('/d/')[1].split('/view')[0]
+                download_url = f"https://drive.google.com/uc?id={file_id}"
                 
-                if 'confirm=' not in response.url:
-                    # Onay sayfasından token al
-                    token = None
-                    for line in response.iter_lines():
-                        if b'confirm=' in line:
-                            token = line.decode().split('confirm=')[1].split('"')[0]
-                            break
-                    
-                    if token:
-                        url = f"{url}&confirm={token}"
-                        response = session.get(url, stream=True, verify=False)
+                # İndirme isteği
+                response = requests.get(download_url, stream=True)
                 
                 # Dosyayı kaydet
                 if response.status_code == 200:

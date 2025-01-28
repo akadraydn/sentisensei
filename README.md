@@ -90,16 +90,20 @@ Bu proje, Arapça metinler üzerinde duygu analizi ve kategori sınıflandırmas
    - Joblib==1.4.2
 
 5. **Model Dosyalarını İndirin:**
-   - [Bu Google Drive linkinden](https://drive.google.com/drive/folders/1xzU4M7fmLlHNCSS4S66QjnKym0puYlXJ?usp=sharing) model dosyalarını indirin
-   - İndirdiğiniz dosyaları `models` klasörüne kopyalayın:
-     - arabic_classifier.keras
-     - best_deep_model.keras
-     - tfidf_vectorizer.joblib
-     - tokenizer.joblib
-     - label_encoder.joblib
-     - sgd_classifier.joblib
-     - logistic_regression.joblib
-     - ensemble_weights.npy
+   Aşağıdaki model dosyalarını indirip `models` klasörüne kopyalayın:
+   - [arabic_classifier.keras](https://drive.google.com/file/d/1p6HNek8N61STgwG6wQ1aSlITQRq9wLgd/view?usp=sharing)
+   - [best_deep_model.keras](https://drive.google.com/file/d/1Q18NEeIzLq8zaiqJLPz-XYr8ICpdeqOX/view?usp=sharing)
+   - [tfidf_vectorizer.joblib](https://drive.google.com/file/d/1LUintLQGEWq3pg67_8HC3mki1eyXOfi5/view?usp=sharing)
+   - [tokenizer.joblib](https://drive.google.com/file/d/1gcEnb8kiaO6RsJ0X_q51qJh-xFmzaMOf/view?usp=sharing)
+   - [label_encoder.joblib](https://drive.google.com/file/d/1DSfvEjsJBEary3kQ6CBUnJvs0ZQpHW6K/view?usp=sharing)
+   - [sgd_classifier.joblib](https://drive.google.com/file/d/1JEEc9Z-_zPRAisvnx62KzJ5b1Mm1Hl19/view?usp=sharing)
+   - [logistic_regression.joblib](https://drive.google.com/file/d/1YhQp9Kb2omyVMEcAuQjSQIgpNaz1vhzD/view?usp=sharing)
+   - [ensemble_weights.npy](https://drive.google.com/file/d/1Uy7QjNnwaLRUrvvNLbhMWtuavcvACiYJ/view?usp=sharing)
+
+   Not: Model dosyalarının boyutları:
+   - best_deep_model.keras: ~148MB
+   - arabic_classifier.keras: ~13MB
+   - Diğer dosyalar: <5MB
 
 6. **API'yi Başlatın:**
    ```bash
