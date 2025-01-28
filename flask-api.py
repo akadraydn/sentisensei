@@ -17,38 +17,7 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 # CORS ayarları
-CORS(app, resources={
-    r"/*": {
-        "origins": ["https://www.sentisensei.com", "http://www.sentisensei.com", "https://sentisensei.com", "http://sentisensei.com"],
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"],
-        "supports_credentials": True,
-        "max_age": 3600
-    }
-})
-
-@app.after_request
-def add_cors_headers(response):
-    origin = request.headers.get('Origin')
-    if origin in ["https://www.sentisensei.com", "http://www.sentisensei.com", "https://sentisensei.com", "http://sentisensei.com"]:
-        response.headers['Access-Control-Allow-Origin'] = origin
-        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-        response.headers['Access-Control-Allow-Credentials'] = 'true'
-        response.headers['Access-Control-Max-Age'] = '3600'
-    return response
-
-@app.route('/predict', methods=['OPTIONS'])
-def handle_options():
-    response = make_response()
-    origin = request.headers.get('Origin')
-    if origin in ["https://www.sentisensei.com", "http://www.sentisensei.com", "https://sentisensei.com", "http://sentisensei.com"]:
-        response.headers['Access-Control-Allow-Origin'] = origin
-        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-        response.headers['Access-Control-Allow-Credentials'] = 'true'
-        response.headers['Access-Control-Max-Age'] = '3600'
-    return response
+CORS(app)
 
 # NLTK verilerini indir
 nltk.download('stopwords')
@@ -294,7 +263,5 @@ def predict():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    # Production ortamında port ve host ayarları
-    port = int(os.environ.get('PORT', 10000))  # Render için varsayılan port
-    app.logger.info(f"Uygulama {port} portunda başlatılıyor...")
-    app.run(host='0.0.0.0', port=port, debug=False)
+    port = int(os.environ.get('PORT', 5002))
+    app.run(host='0.0.0.0', port=port)

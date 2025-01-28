@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split, KFold
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import SGDClassifier, LogisticRegression
 import tensorflow as tf
+from tensorflow import keras
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -127,27 +128,27 @@ class ArabicSentimentModel:
     
     def create_deep_model(self, input_dim):
         """Derin öğrenme modelini oluştur"""
-        regularizer = tf.keras.regularizers.l2(0.001)
+        regularizer = keras.regularizers.l2(0.001)
         
-        model = tf.keras.Sequential([
-            tf.keras.layers.Dense(1024, input_dim=input_dim, activation='relu'),
-            tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Dropout(0.3),
+        model = keras.Sequential([
+            keras.layers.Dense(1024, input_dim=input_dim, activation='relu'),
+            keras.layers.BatchNormalization(),
+            keras.layers.Dropout(0.3),
             
-            tf.keras.layers.Dense(512, activation='relu',
+            keras.layers.Dense(512, activation='relu',
                                 kernel_regularizer=regularizer),
-            tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Dropout(0.2),
+            keras.layers.BatchNormalization(),
+            keras.layers.Dropout(0.2),
             
-            tf.keras.layers.Dense(256, activation='relu',
+            keras.layers.Dense(256, activation='relu',
                                 kernel_regularizer=regularizer),
-            tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Dropout(0.1),
+            keras.layers.BatchNormalization(),
+            keras.layers.Dropout(0.1),
             
-            tf.keras.layers.Dense(1, activation='sigmoid')
+            keras.layers.Dense(1, activation='sigmoid')
         ])
         
-        optimizer = tf.keras.optimizers.Adam(
+        optimizer = keras.optimizers.Adam(
             learning_rate=0.0005,
             beta_1=0.9,
             beta_2=0.999,
@@ -156,7 +157,7 @@ class ArabicSentimentModel:
         
         model.compile(
             optimizer=optimizer,
-            loss='binary_crossentropy',
+            loss=keras.losses.BinaryCrossentropy(),
             metrics=['accuracy']
         )
         return model
@@ -201,7 +202,7 @@ class ArabicSentimentModel:
             self.deep_model = self.create_deep_model(X_train_tfidf.shape[1])
             
             # Callback'leri tanımla
-            reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
+            reduce_lr = keras.callbacks.ReduceLROnPlateau(
                 monitor='val_loss',
                 factor=0.2,
                 patience=3,
@@ -209,7 +210,7 @@ class ArabicSentimentModel:
                 verbose=1
             )
             
-            model_checkpoint = tf.keras.callbacks.ModelCheckpoint(
+            model_checkpoint = keras.callbacks.ModelCheckpoint(
                 f'best_model_fold_{fold}.h5',
                 monitor='val_loss',
                 save_best_only=True,
@@ -306,7 +307,7 @@ joblib.dump(model.lr_classifier, 'models/logistic_regression.joblib')
 # Derin öğrenme modeli eğitimi ve kaydı
 model.deep_model = model.create_deep_model(X_train_tfidf.shape[1])
 
-reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
+reduce_lr = keras.callbacks.ReduceLROnPlateau(
     monitor='val_loss',
     factor=0.2,
     patience=3,
@@ -314,7 +315,7 @@ reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
     verbose=1
 )
 
-model_checkpoint = tf.keras.callbacks.ModelCheckpoint(
+model_checkpoint = keras.callbacks.ModelCheckpoint(
     'models/best_deep_model.keras',
     monitor='val_loss',
     save_best_only=True,

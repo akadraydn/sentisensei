@@ -5,7 +5,7 @@ Bu proje, Arapça metinler üzerinde duygu analizi ve kategori sınıflandırmas
 ## Sistem Gereksinimleri
 
 - macOS veya Windows işletim sistemi
-- Python 3.9
+- Python 3.10.11
 - pip (Python paket yöneticisi)
 
 ## Kurulum Adımları
@@ -13,28 +13,27 @@ Bu proje, Arapça metinler üzerinde duygu analizi ve kategori sınıflandırmas
 ### macOS için:
 
 1. **Python Kurulumu:**
-   - Eğer bilgisayarınızda Python 3.9 kurulu değilse, [Python'un resmi sitesinden](https://www.python.org/downloads/) indirip kurabilirsiniz
-   - Kurulum sırasında "Add Python 3.9 to PATH" seçeneğini işaretlediğinizden emin olun
-   - Kurulumdan sonra terminali açıp aşağıdaki komutu yazarak Python'un kurulu olduğunu doğrulayın:
+   - [Python'un resmi sitesinden](https://www.python.org/downloads/) Python 3.10.11 sürümünü indirin
+   - Kurulum sırasında "Add Python 3.10 to PATH" seçeneğini işaretleyin
+   - Kurulumdan sonra terminali açıp Python sürümünü kontrol edin:
    ```bash
    python3 --version
    ```
-   - Eğer komut çalışmazsa, Terminal'i kapatıp yeniden açın
-   - Hala çalışmıyorsa, Python'u PATH'e manuel olarak ekleyin:
-     ```bash
-     echo 'export PATH="/Library/Frameworks/Python.framework/Versions/3.9/bin:$PATH"' >> ~/.zshrc
-     source ~/.zshrc
-     ```
 
-2. **Proje Dosyalarını İndirin:**
-   - [Bu linkten](https://github.com/akadraydn/SentiSensei) projeyi ZIP olarak indirin
-   - İndirdiğiniz ZIP dosyasını çıkartın
-   - Terminal'i açın ve çıkarttığınız klasöre gidin:
+2. **VSCode Python Yorumlayıcı Ayarları:**
+   - VSCode'u açın
+   - Klavyeden `Cmd + Shift + P` tuşlarına basın
+   - Açılan komut paletine "Python: Select Interpreter" yazın ve Enter'a basın
+   - Listeden Python 3.10.11 sürümünü seçin
+   - VSCode'un sağ alt köşesinde seçilen Python sürümünün "3.10.11" olduğunu doğrulayın
+
+3. **Proje Dosyalarını İndirin:**
    ```bash
-   cd İNDİRDİĞİNİZ_KLASÖRÜN_YOLU
+   git clone https://github.com/akadraydn/SentiSensei.git
+   cd SentiSensei
    ```
 
-3. **Sanal Ortam Oluşturun:**
+3. **Sanal Ortam Oluşturun ve Aktifleştirin:**
    ```bash
    python3 -m venv venv
    source venv/bin/activate
@@ -43,31 +42,27 @@ Bu proje, Arapça metinler üzerinde duygu analizi ve kategori sınıflandırmas
 ### Windows için:
 
 1. **Python Kurulumu:**
-   - [Python'un resmi sitesinden](https://www.python.org/downloads/) Python 3.9'u indirin
-   - İndirilen kurulum dosyasını çalıştırın
-   - Kurulum sırasında "Add Python 3.9 to PATH" kutucuğunu mutlaka işaretleyin
-   - Kurulumdan sonra Komut İstemi'ni (cmd) açıp şu komutu yazarak Python'un kurulu olduğunu doğrulayın:
+   - [Python'un resmi sitesinden](https://www.python.org/downloads/) Python 3.10.11 sürümünü indirin
+   - Kurulum sırasında "Add Python 3.10 to PATH" seçeneğini işaretleyin
+   - Kurulumdan sonra Komut İstemi'ni açıp Python sürümünü kontrol edin:
    ```cmd
    python --version
    ```
-   - Eğer komut çalışmazsa, Komut İstemi'ni kapatıp yeniden açın
-   - Hala çalışmıyorsa, Sistem Ortam Değişkenleri'nden PATH'e Python'u ekleyin:
-     1. Windows + R tuşlarına basın
-     2. "sysdm.cpl" yazıp Enter'a basın
-     3. Gelişmiş sekmesine tıklayın
-     4. "Ortam Değişkenleri" butonuna tıklayın
-     5. PATH değişkenini seçip "Düzenle"ye tıklayın
-     6. "Yeni" butonuna tıklayıp Python kurulum dizinini ekleyin (genellikle C:\Users\KullanıcıAdı\AppData\Local\Programs\Python\Python39)
 
-2. **Proje Dosyalarını İndirin:**
-   - [Bu linkten](https://github.com/akadraydn/SentiSensei) projeyi ZIP olarak indirin
-   - İndirdiğiniz ZIP dosyasını çıkartın
-   - Komut İstemi'ni açın ve çıkarttığınız klasöre gidin:
+2. **VSCode Python Yorumlayıcı Ayarları:**
+   - VSCode'u açın
+   - Klavyeden `Ctrl + Shift + P` tuşlarına basın
+   - Açılan komut paletine "Python: Select Interpreter" yazın ve Enter'a basın
+   - Listeden Python 3.10.11 sürümünü seçin
+   - VSCode'un sağ alt köşesinde seçilen Python sürümünün "3.10.11" olduğunu doğrulayın
+
+3. **Proje Dosyalarını İndirin:**
    ```cmd
-   cd İNDİRDİĞİNİZ_KLASÖRÜN_YOLU
+   git clone https://github.com/akadraydn/SentiSensei.git
+   cd SentiSensei
    ```
 
-3. **Sanal Ortam Oluşturun:**
+3. **Sanal Ortam Oluşturun ve Aktifleştirin:**
    ```cmd
    python -m venv venv
    venv\Scripts\activate
@@ -77,74 +72,26 @@ Bu proje, Arapça metinler üzerinde duygu analizi ve kategori sınıflandırmas
 
 4. **Gerekli Paketleri Yükleyin:**
    ```bash
+   pip install --upgrade pip
    pip install -r requirements.txt
    ```
 
+   Yüklenen önemli paket sürümleri:
+   - Flask==3.0.2
+   - Flask-CORS==5.0.0
+   - Werkzeug==3.1.1
+   - NumPy==1.26.4
+   - Pandas==2.1.4
+   - Scikit-learn==1.5.2
+   - TensorFlow-macos==2.16.2 (macOS için)
+   - TensorFlow-metal==1.1.0 (macOS için)
+   - Keras==3.8.0
+   - NLTK==3.8.1
+   - Joblib==1.4.2
+
 5. **Model Dosyalarını İndirin:**
    - [Bu Google Drive linkinden](https://drive.google.com/drive/folders/1xzU4M7fmLlHNCSS4S66QjnKym0puYlXJ?usp=sharing) model dosyalarını indirin
-   - İndirdiğiniz ZIP dosyasını çıkartın ve içindeki tüm dosyaları `models` klasörüne kopyalayın
-
-6. **API'yi Başlatın:**
-   ```bash
-   python flask-api.py
-   ```
-   Terminal'de veya Komut İstemi'nde "Running on http://127.0.0.1:5002" benzeri bir mesaj görmelisiniz.
-
-## Kullanım
-
-1. API'yi başlattıktan sonra web tarayıcınızdan [sentisensei.com] adresine gidin
-2. Metin kutusuna analiz etmek istediğiniz Arapça metni girin
-3. "Analiz Et" butonuna tıklayın
-4. Sonuçlar otomatik olarak görüntülenecektir
-
-## Port Kullanımı
-
-API, 5002 portunda çalışacak şekilde ayarlanmıştır. Eğer bu port başka bir uygulama tarafından kullanılıyorsa, API başlatılamayacak ve bir hata mesajı göreceksiniz.
-
-### macOS için:
-1. Tüm Terminal pencerelerini kapatın
-2. Bilgisayarınızı yeniden başlatın
-3. Sadece bu uygulamayı çalıştırın
-
-Alternatif olarak, şu komutla 5002 portunu kullanan uygulamayı bulup kapatabilirsiniz:
-```bash
-lsof -i :5002
-kill -9 PID_NUMARASI
-```
-
-### Windows için:
-1. Tüm Komut İstemi pencerelerini kapatın
-2. Bilgisayarınızı yeniden başlatın
-3. Sadece bu uygulamayı çalıştırın
-
-Alternatif olarak, şu komutla 5002 portunu kullanan uygulamayı bulup kapatabilirsiniz:
-```cmd
-netstat -ano | findstr :5002
-taskkill /PID PID_NUMARASI /F
-```
-
-## Sorun Giderme
-
-1. **"ImportError: numpy.core.multiarray failed to import" Hatası:**
-   ```bash
-   pip uninstall numpy
-   pip uninstall tensorflow
-   pip install numpy==1.23.5
-   pip install tensorflow==2.12.0
-   ```
-
-2. **"ModuleNotFoundError" Hatası:**
-   - Sanal ortamın aktif olduğundan emin olun
-     - macOS: Terminal'de `source venv/bin/activate`
-     - Windows: Komut İstemi'nde `venv\Scripts\activate`
-   - `requirements.txt` dosyasındaki tüm paketlerin yüklendiğini kontrol edin
-
-3. **Bağlantı Hatası:**
-   - Terminal'de veya Komut İstemi'nde API'nin çalışır durumda olduğunu kontrol edin
-   - Bilgisayarınızın internet bağlantısını kontrol edin
-
-4. **Model Dosyası Hatası:**
-   - `models` klasöründe aşağıdaki dosyaların olduğunu kontrol edin:
+   - İndirdiğiniz dosyaları `models` klasörüne kopyalayın:
      - arabic_classifier.keras
      - best_deep_model.keras
      - tfidf_vectorizer.joblib
@@ -154,19 +101,64 @@ taskkill /PID PID_NUMARASI /F
      - logistic_regression.joblib
      - ensemble_weights.npy
 
-5. **Port Kullanım Hatası:**
-   - "Port 5002 is already in use" hatası alırsanız:
-     1. Tüm Terminal/Komut İstemi pencerelerini kapatın
-     2. Bilgisayarınızı yeniden başlatın
-     3. Sadece bu uygulamayı çalıştırın
+6. **API'yi Başlatın:**
+   ```bash
+   python3 flask-api.py  # macOS için
+   python flask-api.py   # Windows için
+   ```
+   API başarıyla başlatıldığında "Running on http://127.0.0.1:5002" mesajını göreceksiniz.
 
-## Önemli Notlar
+## Port Kullanımı
 
-- API çalışır durumdayken Terminal/Komut İstemi penceresini kapatmayın
-- Bilgisayarınızı yeniden başlattığınızda API'yi tekrar başlatmanız gerekecektir
-- Sistem sadece Arapça metinler için çalışmaktadır
-- Web arayüzündeki "Dosya Yükle" özelliği şu anda aktif değildir, lütfen metin kutusunu kullanın
-- Analiz için örnek metinleri aşağıdaki "Test İçin Örnek Metinler" bölümünden kopyalayabilirsiniz
+API varsayılan olarak 5002 portunda çalışır. Eğer port kullanımda olduğuna dair hata alırsanız:
+
+### macOS için:
+```bash
+# Portu kullanan uygulamayı bulun
+lsof -i :5002
+
+# Uygulamayı durdurun (PID_NUMARASI yerine üstteki komuttan aldığınız PID'yi yazın)
+kill -9 PID_NUMARASI
+```
+
+### Windows için:
+```cmd
+# Portu kullanan uygulamayı bulun
+netstat -ano | findstr :5002
+
+# Uygulamayı durdurun (PID_NUMARASI yerine üstteki komuttan aldığınız PID'yi yazın)
+taskkill /PID PID_NUMARASI /F
+```
+
+## Sorun Giderme
+
+1. **TensorFlow Hataları (macOS):**
+   - Apple Silicon Mac kullanıyorsanız, TensorFlow'un özel sürümlerini kullanmanız gerekir:
+   ```bash
+   pip uninstall tensorflow tensorflow-macos tensorflow-metal
+   pip install tensorflow-macos tensorflow-metal
+   ```
+
+2. **ModuleNotFoundError Hataları:**
+   - Sanal ortamın aktif olduğundan emin olun
+   - Paketleri yeniden yükleyin:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Model Dosyası Hataları:**
+   - `models` klasöründeki tüm dosyaların doğru konumda olduğunu kontrol edin
+   - Dosya boyutlarını kontrol edin:
+     - best_deep_model.keras: ~148MB
+     - arabic_classifier.keras: ~13MB
+     - Diğer dosyalar: <5MB
+
+4. **NLTK Veri Hatası:**
+   ```python
+   import nltk
+   nltk.download('stopwords')
+   nltk.download('punkt')
+   ```
 
 ## Test İçin Örnek Metinler
 
@@ -233,5 +225,13 @@ Aşağıdaki Arapça metinleri test amaçlı kullanabilirsiniz:
     (Yerel ekonomi son çeyrekte önemli bir büyüme kaydetti)
 
 Metinleri kopyalayıp web arayüzündeki metin kutusuna yapıştırarak analiz edebilirsiniz.
+
+## Önemli Notlar
+
+- macOS Apple Silicon (M1/M2) kullanıcıları için özel TensorFlow sürümleri gereklidir
+- Python sürümü kesinlikle 3.10.11 olmalıdır
+- Sanal ortam kullanımı zorunludur
+- API çalışırken Terminal/Komut İstemi penceresini kapatmayın
+- Sistem sadece Arapça metinler için optimize edilmiştir
 
 

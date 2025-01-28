@@ -6,12 +6,11 @@ from nltk.tokenize import word_tokenize
 import re
 from sklearn.preprocessing import LabelEncoder
 import numpy as np
-from keras.preprocessing.text import Tokenizer
-from keras.utils import pad_sequences
-from keras.utils import to_categorical
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.utils import pad_sequences, to_categorical
 from sklearn.model_selection import train_test_split
-from keras.models import Sequential
-from keras.layers import Embedding, LSTM, Dense, Dropout, BatchNormalization
 import matplotlib.pyplot as plt
 from sklearn.metrics import classification_report, confusion_matrix
 import seaborn as sns
@@ -95,20 +94,22 @@ def load_dataset(base_path, max_samples_per_category=None):
 
 def create_deep_model(vocab_size, max_length, num_classes):
     """Derin öğrenme modelini oluştur"""
-    model = Sequential([
-        Embedding(vocab_size, 100, input_length=max_length),
-        LSTM(128, return_sequences=True),
-        Dropout(0.3),
-        LSTM(64),
-        BatchNormalization(),
-        Dense(32, activation='relu'),
-        Dropout(0.2),
-        Dense(num_classes, activation='softmax')
+    model = tf.keras.Sequential([
+        tf.keras.layers.Embedding(vocab_size, 100, input_length=max_length),
+        tf.keras.layers.LSTM(128, return_sequences=True),
+        tf.keras.layers.Dropout(0.3),
+        tf.keras.layers.LSTM(64),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.Dense(32, activation='relu'),
+        tf.keras.layers.Dropout(0.2),
+        tf.keras.layers.Dense(num_classes, activation='softmax')
     ])
     
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+    
     model.compile(
-        optimizer='adam',
-        loss='categorical_crossentropy',
+        optimizer=optimizer,
+        loss=tf.keras.losses.CategoricalCrossentropy(),
         metrics=['accuracy']
     )
     

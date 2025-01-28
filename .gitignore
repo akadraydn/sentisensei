@@ -1,4 +1,6 @@
-/models/*
-*.keras
-*.joblib
-*.npy
+.DS_Store
+__pycache__/
+*.h5
+cc.ar.300.vec
+*.pem
+Adsız.rtf
